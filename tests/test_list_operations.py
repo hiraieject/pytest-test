@@ -5,14 +5,14 @@
 import pytest
 
 
-def find_max(numbers: list) -> int:
+def find_max(numbers: list):
     """リストの最大値を取得"""
     if not numbers:
         raise ValueError("空のリストです")
     return max(numbers)
 
 
-def find_min(numbers: list) -> int:
+def find_min(numbers: list):
     """リストの最小値を取得"""
     if not numbers:
         raise ValueError("空のリストです")

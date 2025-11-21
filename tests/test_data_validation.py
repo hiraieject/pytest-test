@@ -14,9 +14,16 @@ def validate_email(email: str) -> bool:
 
 def validate_phone(phone: str) -> bool:
     """電話番号の形式を検証（日本の形式）"""
-    # 090-1234-5678 または 09012345678 の形式
-    pattern = r'^0\d{1,4}-?\d{1,4}-?\d{4}$'
-    return re.match(pattern, phone) is not None
+    # 固定電話: 0X-XXXX-XXXX または 0XX-XXX-XXXX
+    # 携帯電話: 090-XXXX-XXXX, 080-XXXX-XXXX, 070-XXXX-XXXX
+    import re
+    # ハイフン区切りまたはハイフンなし
+    pattern = r'^(0\d{1,4}-\d{1,4}-\d{4}|0\d{9,10})$'
+    if not re.match(pattern, phone):
+        return False
+    # 数字のみの場合は10桁または11桁
+    digits_only = phone.replace('-', '')
+    return len(digits_only) in [10, 11]
 
 
 def validate_age(age: int) -> bool:
