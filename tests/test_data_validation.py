@@ -63,12 +63,14 @@ def validate_password_strength(password: str) -> str:
 class TestEmailValidation:
     """メール検証のテストクラス"""
     
+    @pytest.mark.test_id("TC014")
     def test_valid_emails(self):
         """有効なメールアドレスのテスト"""
         assert validate_email("test@example.com") == True
         assert validate_email("user.name@domain.co.jp") == True
         assert validate_email("admin+tag@test-domain.com") == True
     
+    @pytest.mark.test_id("TC014")
     def test_invalid_emails(self):
         """無効なメールアドレスのテスト"""
         assert validate_email("invalid.email") == False
@@ -81,12 +83,14 @@ class TestEmailValidation:
 class TestPhoneValidation:
     """電話番号検証のテストクラス"""
     
+    @pytest.mark.test_id("TC015")
     def test_valid_phones(self):
         """有効な電話番号のテスト"""
         assert validate_phone("090-1234-5678") == True
         assert validate_phone("09012345678") == True
         assert validate_phone("03-1234-5678") == True
     
+    @pytest.mark.test_id("TC015")
     def test_invalid_phones(self):
         """無効な電話番号のテスト"""
         assert validate_phone("123-4567") == False

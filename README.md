@@ -1,29 +1,44 @@
-# pytest サンプルプロジェクト
+# pytest テスト自動化プロジェクト
 
-このプロジェクトは、pytestを使用したテストの実装例と、テスト結果をExcelファイルに出力する機能を提供します。
+このプロジェクトは、pytest を使用したテストの実装例と、テスト結果を Excel ファイルに出力する機能を提供します。
 
 ## 機能
 
-- ✅ pytestを使用した複数のテストケース
-- 📊 テスト結果の自動Excel出力
+- ✅ pytest を使用した複数のテストケース
+- 📋 テンプレートベースのテスト仕様書兼結果ファイル
+- 📊 テスト結果の自動 Excel 出力（2種類のレポート）
 - 📝 実行ログの記録
 - 🏷️ カテゴリ別のテスト結果管理
+- ⚙️ YAML 形式の設定ファイル
 
 ## プロジェクト構成
 
 ```
 pytest-test/
+├── template/                   # テンプレートファイル格納フォルダ
+│   └── test_template.xlsx      # テスト仕様書兼結果ファイルの雛形
+├── conf/                       # 設定ファイル格納フォルダ
+│   └── config.yaml             # テスト実行設定（ROMバージョン、実施者名など）
 ├── tests/                      # テストファイル格納フォルダ
 │   ├── test_calculation.py     # 計算機能のテスト
 │   ├── test_string_processing.py  # 文字列処理のテスト
 │   ├── test_list_operations.py    # リスト操作のテスト
 │   └── test_data_validation.py    # データ検証のテスト
+├── testlib/                    # テスト実行サポートライブラリ
+│   ├── __init__.py
+│   ├── config_manager.py       # 設定管理モジュール
+│   └── excel_manager.py        # テンプレートベースExcel管理モジュール
 ├── output/                     # 出力フォルダ（Excel、ログ）
-│   ├── test_results_*.xlsx     # テスト結果Excelファイル
+│   ├── test_results.xlsx       # テンプレートベースの結果ファイル
+│   ├── test_results_*.xlsx     # 詳細レポート（実行ごとに生成）
 │   └── test_execution_*.log    # 実行ログファイル
-├── conftest.py                 # pytest設定ファイル
-├── excel_reporter.py           # Excelレポート生成モジュール
+├── docs/                       # ドキュメント
+│   ├── test_implementer_guide.md  # テストスクリプト実装者向けガイド
+│   └── test_operator_guide.md     # テスト実施者向けガイド
+├── conftest.py                 # pytest 設定ファイル
+├── excel_reporter.py           # Excel レポート生成モジュール
 ├── logger_config.py            # ロギング設定モジュール
+├── pytest.ini                  # pytest マーカー定義
 ├── requirements.txt            # 依存パッケージ
 └── README.md                   # このファイル
 ```
@@ -36,7 +51,24 @@ pytest-test/
 pip install -r requirements.txt
 ```
 
-### 2. テストの実行
+### 2. 設定ファイルの編集
+
+テスト実施前に `conf/config.yaml` を編集して必要な情報を入力します:
+
+```yaml
+# テンプレートファイル設定
+template_file: "test_template.xlsx"
+
+# 出力ファイル設定
+output_file: "test_results.xlsx"
+output_sheet: "テスト結果"
+
+# テスト情報
+rom_version: "v0.0"  # ターゲットROMバージョン（必ず変更してください）
+tester_name: ""  # テスト実施者氏名（任意）
+```
+
+### 3. テストの実行
 
 全てのテストを実行する場合:
 
@@ -58,11 +90,31 @@ pytest -v
 
 ## 出力ファイル
 
-### Excelファイル（output/test_results_*.xlsx）
+テスト実行後、`output` フォルダに以下のファイルが生成されます:
 
-テスト実行後、`output`フォルダに以下の構成でExcelファイルが生成されます:
+### 1. テンプレートベースの結果ファイル（output/test_results.xlsx）
 
-1. **Summaryシート**: テスト実行の統計情報
+テンプレートファイルに基づいて作成される、メインの結果ファイルです。
+
+**構成:**
+- **1行目**: ターゲットROMバージョン（設定ファイルから自動記入）
+- **3行目**: ヘッダー行
+  - テスト番号、テスト分類１、テスト分類２、テスト手順、期待値、テスト実施日付、テスト結果、テスト結果補足
+- **4行目以降**: テストケースと結果
+  - テスト実施日付: テスト実行日（月/日形式）が自動記入
+  - テスト結果: OK/NG/SKIP が自動記入
+  - テスト結果補足: NG の場合、エラー詳細が自動記入
+
+**特徴:**
+- 初回実行時にテンプレートファイルからコピーされて作成
+- 2回目以降は既存ファイルを更新（上書き）
+- `@pytest.mark.test_id()` が設定されたテストのみが記録される
+
+### 2. 詳細レポート（output/test_results_YYYYMMDD_HHMMSS.xlsx）
+
+実行ごとに生成される詳細なレポートファイルです。
+
+1. **Summary シート**: テスト実行の統計情報
    - 総テスト数
    - 成功/失敗/スキップの件数と割合
    - 実行日時
@@ -73,14 +125,14 @@ pytest -v
    - List Operations（リスト操作）
    - Data Validation（データ検証）
 
-3. **All Testsシート**: 全テストの詳細結果
+3. **All Tests シート**: 全テストの詳細結果
    - テスト名
    - カテゴリ
    - 結果（成功/失敗/スキップ）
    - 実行時間
    - エラーメッセージ
 
-### ログファイル（output/test_execution_*.log）
+### 3. ログファイル（output/test_execution_*.log）
 
 テスト実行の詳細ログが記録されます:
 - 各テストの開始/終了
@@ -88,9 +140,11 @@ pytest -v
 - エラー詳細
 - 実行時刻
 
-## テストのカテゴリ
+## テストの記述方法
 
-テストにカテゴリを設定するには、`@pytest.mark.category()`デコレータを使用します:
+### カテゴリの設定
+
+テストにカテゴリを設定するには、`@pytest.mark.category()` デコレータを使用します:
 
 ```python
 import pytest
@@ -102,6 +156,45 @@ class TestExample:
 ```
 
 カテゴリを指定しない場合、ファイル名から自動的に推測されます。
+
+### テスト番号の設定
+
+テンプレートファイルのテスト番号と対応させるには、`@pytest.mark.test_id()` デコレータを使用します:
+
+```python
+import pytest
+
+@pytest.mark.category("Calculation")
+class TestCalculation:
+    
+    @pytest.mark.test_id("TC001")
+    def test_add(self):
+        """加算テスト"""
+        assert 2 + 3 == 5
+    
+    @pytest.mark.test_id("TC002")
+    def test_subtract(self):
+        """減算テスト"""
+        assert 10 - 3 == 7
+```
+
+**重要:**
+- `test_id` に指定する値は、テンプレートファイルの「テスト番号」列の値と完全に一致させる必要があります
+- `test_id` を指定しないテストは、詳細レポートにのみ記録されます
+
+## ドキュメント
+
+詳細なガイドは `docs/` フォルダを参照してください:
+
+- **[テストスクリプト実装者向けガイド](docs/test_implementer_guide.md)**
+  - テストスクリプトの書き方
+  - テスト番号の指定方法
+  - テンプレートファイルとの対応
+
+- **[テスト実施者向けガイド](docs/test_operator_guide.md)**
+  - テスト実施手順
+  - VS Code での実行方法
+  - 結果ファイルの確認方法
 
 ## サンプルテスト
 
