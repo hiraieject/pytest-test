@@ -1,0 +1,13 @@
+# テスト実行設定ファイル
+# このファイルを編集してテスト実行時の設定を変更できます
+
+# テンプレートファイル設定
+template_file: "test_template.xlsx"  # template/ フォルダ内のテンプレートファイル名
+
+# 出力ファイル設定
+output_file: "test_results.xlsx"  # output/ フォルダ内の出力ファイル名
+output_sheet: "テスト結果"  # 出力シート名（日本語可）
+
+# テスト情報
+rom_version: "v0.0"  # ターゲットROMバージョン（英数含む文字列）
+tester_name: ""  # テスト実施者氏名（日本語可）

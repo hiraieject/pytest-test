@@ -40,18 +40,21 @@ def sort_list(items: list, reverse: bool = False) -> list:
 class TestListBasics:
     """リスト基本操作のテストクラス"""
     
+    @pytest.mark.test_id("TC010")
     def test_find_max(self):
         """最大値検索のテスト"""
         assert find_max([1, 5, 3, 9, 2]) == 9
         assert find_max([10]) == 10
         assert find_max([-5, -1, -10]) == -1
     
+    @pytest.mark.test_id("TC011")
     def test_find_min(self):
         """最小値検索のテスト"""
         assert find_min([1, 5, 3, 9, 2]) == 1
         assert find_min([10]) == 10
         assert find_min([-5, -1, -10]) == -10
     
+    @pytest.mark.test_id("TC012")
     def test_calculate_average(self):
         """平均値計算のテスト"""
         assert calculate_average([1, 2, 3, 4, 5]) == 3.0
@@ -73,6 +76,7 @@ class TestListBasics:
 class TestListManipulation:
     """リスト操作のテストクラス"""
     
+    @pytest.mark.test_id("TC013")
     def test_remove_duplicates(self):
         """重複削除のテスト"""
         assert remove_duplicates([1, 2, 2, 3, 3, 3]) == [1, 2, 3]

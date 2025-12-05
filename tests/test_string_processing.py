@@ -31,17 +31,20 @@ def is_palindrome(s: str) -> bool:
 class TestStringOperations:
     """文字列操作のテストクラス"""
     
+    @pytest.mark.test_id("TC006")
     def test_reverse_string(self):
         """文字列反転のテスト"""
         assert reverse_string("hello") == "olleh"
         assert reverse_string("Python") == "nohtyP"
         assert reverse_string("") == ""
     
+    @pytest.mark.test_id("TC007")
     def test_capitalize_words(self):
         """単語の大文字化テスト"""
         assert capitalize_words("hello world") == "Hello World"
         assert capitalize_words("python programming") == "Python Programming"
     
+    @pytest.mark.test_id("TC008")
     def test_count_vowels(self):
         """母音カウントのテスト"""
         assert count_vowels("hello") == 2
@@ -49,12 +52,14 @@ class TestStringOperations:
         assert count_vowels("xyz") == 0
         assert count_vowels("beautiful") == 5
     
+    @pytest.mark.test_id("TC009")
     def test_palindrome_simple(self):
         """単純な回文テスト"""
         assert is_palindrome("racecar") == True
         assert is_palindrome("hello") == False
         assert is_palindrome("A") == True
     
+    @pytest.mark.test_id("TC009")
     def test_palindrome_with_spaces(self):
         """スペース含む回文テスト"""
         assert is_palindrome("A man a plan a canal Panama") == True

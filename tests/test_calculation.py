@@ -31,38 +31,45 @@ def divide(a, b):
 class TestBasicCalculation:
     """基本計算のテストクラス"""
     
+    @pytest.mark.test_id("TC001")
     def test_add_positive_numbers(self):
         """正の数の加算テスト"""
         assert add(2, 3) == 5
         assert add(10, 20) == 30
     
+    @pytest.mark.test_id("TC002")
     def test_add_negative_numbers(self):
         """負の数の加算テスト"""
         assert add(-5, -3) == -8
         assert add(-10, 5) == -5
     
+    @pytest.mark.test_id("TC002")
     def test_subtract_positive_numbers(self):
         """正の数の減算テスト"""
         assert subtract(10, 3) == 7
         assert subtract(20, 5) == 15
     
+    @pytest.mark.test_id("TC002")
     def test_subtract_negative_numbers(self):
         """負の数の減算テスト"""
         assert subtract(-5, -3) == -2
         assert subtract(5, -3) == 8
     
+    @pytest.mark.test_id("TC003")
     def test_multiply_numbers(self):
         """乗算テスト"""
         assert multiply(3, 4) == 12
         assert multiply(-2, 5) == -10
         assert multiply(0, 100) == 0
     
+    @pytest.mark.test_id("TC004")
     def test_divide_numbers(self):
         """除算テスト"""
         assert divide(10, 2) == 5
         assert divide(15, 3) == 5
         assert divide(7, 2) == 3.5
     
+    @pytest.mark.test_id("TC005")
     def test_divide_by_zero(self):
         """ゼロ除算のテスト"""
         with pytest.raises(ValueError, match="ゼロで除算することはできません"):
