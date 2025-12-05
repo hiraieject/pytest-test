@@ -17,6 +17,35 @@ config_manager = None
 logger = None
 
 
+def extract_error_info(longrepr) -> str:
+    """
+    テスト失敗時のエラー情報を抽出
+    
+    Args:
+        longrepr: pytest のエラー詳細情報
+        
+    Returns:
+        エラー情報の文字列
+    """
+    if not longrepr:
+        return ""
+    
+    longrepr_str = str(longrepr)
+    lines = longrepr_str.split('\n')
+    
+    # アサーションエラーの詳細を抽出
+    for line in reversed(lines):
+        if line.strip() and ('assert' in line.lower() or 'error' in line.lower()):
+            return line.strip()
+    
+    # アサーションが見つからない場合は最後の非空行を使用
+    for line in reversed(lines):
+        if line.strip():
+            return line.strip()
+    
+    return ""
+
+
 def pytest_configure(config):
     """pytest開始時の設定"""
     global excel_reporter, excel_manager, config_manager, logger
@@ -115,23 +144,10 @@ def pytest_runtest_makereport(item, call):
         # テンプレートベースのExcelに結果を記録
         if excel_manager and test_id:
             try:
-                # エラー情報の抽出（より詳細な情報）
+                # エラー情報の抽出
                 error_info = ""
                 if status == "failed" and rep.longrepr:
-                    # アサーションエラーの詳細を抽出
-                    longrepr_str = str(rep.longrepr)
-                    # 最後の行にエラー詳細がある場合が多い
-                    lines = longrepr_str.split('\n')
-                    for line in reversed(lines):
-                        if line.strip() and ('assert' in line.lower() or 'error' in line.lower()):
-                            error_info = line.strip()
-                            break
-                    if not error_info and lines:
-                        # アサーションが見つからない場合は最後の非空行を使用
-                        for line in reversed(lines):
-                            if line.strip():
-                                error_info = line.strip()
-                                break
+                    error_info = extract_error_info(rep.longrepr)
                 
                 excel_manager.write_test_result(test_id, status, error_info)
             except Exception as e:

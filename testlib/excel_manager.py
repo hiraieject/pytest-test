@@ -12,6 +12,10 @@ import logging
 
 logger = logging.getLogger("pytest_logger")
 
+# テンプレートファイルの構造定数
+HEADER_ROW = 3
+FIRST_DATA_ROW = 4
+
 
 class ExcelManager:
     """テンプレートベースExcel管理クラス"""
@@ -91,13 +95,24 @@ class ExcelManager:
         if not self.worksheet:
             return None
         
-        # 4行目以降でテスト番号列（A列）を検索
-        for row in range(4, self.worksheet.max_row + 1):
+        # FIRST_DATA_ROW以降でテスト番号列（A列）を検索
+        for row in range(FIRST_DATA_ROW, self.worksheet.max_row + 1):
             cell_value = self.worksheet.cell(row=row, column=1).value
             if cell_value and str(cell_value).strip() == str(test_id).strip():
                 return row
         
         return None
+    
+    def _format_test_date(self) -> str:
+        """
+        テスト実施日付をフォーマット
+        
+        Returns:
+            フォーマットされた日付（月/日形式）
+        """
+        now = datetime.now()
+        # 月/日形式で、先頭のゼロを削除
+        return f"{now.month}/{now.day}"
     
     def write_test_result(self, test_id: str, status: str, error_info: str = ""):
         """
@@ -117,7 +132,7 @@ class ExcelManager:
             return
         
         # テスト実施日付を記入（F列）
-        test_date = datetime.now().strftime("%m/%d").lstrip("0").replace("/0", "/")  # 月/日形式
+        test_date = self._format_test_date()
         self.worksheet.cell(row=row, column=6, value=test_date)
         
         # テスト結果を記入（G列）
